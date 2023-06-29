@@ -36,10 +36,34 @@
         }
         function showUserOnScreen(user) {
             const parentElement = document.getElementById('listofitems');
-            const childElement = document.createElement('li');
-            childElement.textContent = user.name + ' - ' + user.email + ' - ' + user.phonenumber;
-            parentElement.appendChild(childElement);
+            const listItem = document.createElement('li');
+            listItem.textContent = user.name + ' - ' + user.email + ' - ' + user.phonenumber;
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', function() {
+                deleteUser(user.email);
+            });
+            listItem.appendChild(deleteButton);
+            parentElement.appendChild(listItem);
         }
+        function deleteUser(email) {
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const updatedUsers = storedUsers.filter(user => user.email !== email);
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+            localStorage.removeItem(email);
+            removeUserFromUI(email);
+        }
+        function removeUserFromUI(email) {
+            const listItem = document.querySelector(`li[data-email="${email}"]`);
+            listItem.remove();
+        }
+        // Load existing users from local storage and display them on the UI
+        window.addEventListener('DOMContentLoaded', function() {
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            storedUsers.forEach(function(user) {
+                showUserOnScreen(user);
+            });
+        });
     </script>
 </body>
 </html>
